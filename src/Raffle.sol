@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.19;
 
 import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
@@ -44,6 +44,7 @@ contract Raffle is VRFConsumerBaseV2{
     /** Events */
     event EnteredRaffle(address indexed player);
     event PickedWinner(address indexed winner);
+    event RequestedRaffleWinner(uint256 indexed requestId);
 
     constructor(
         uint256 _entranceFee, 
@@ -114,9 +115,9 @@ contract Raffle is VRFConsumerBaseV2{
         // if(block.timestamp - s_lastTimeStamp >= i_interval){
         //     revert();
         // }
-        
+
         s_raffleState = RaffleState.CALCULATING;
-        i_vrfCoordinator.requestRandomWords(
+        uint256 requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane, // gas lane
             i_subscriptionId, // subscriptionId
             REQUEST_CONFIRMATIONS, // number of confirmations
@@ -124,6 +125,7 @@ contract Raffle is VRFConsumerBaseV2{
             NUM_WORDS
         );
         
+        emit RequestedRaffleWinner(requestId);
     }
 
     function fulfillRandomWords(
@@ -159,5 +161,16 @@ contract Raffle is VRFConsumerBaseV2{
     function getPlayer(uint256 indexOfPlayer) external view returns(address){
         return s_players[indexOfPlayer];
     } 
+    
+    function getRecentWinner() external view returns(address){
+        return s_recentWinner;
+    }
 
+    function getLengthOfPLayer() external view returns(uint256){
+        return s_players.length;
+    }
+
+    function getLastTimeStamp() external view returns(uint256){
+        return s_lastTimeStamp;
+    }
 }

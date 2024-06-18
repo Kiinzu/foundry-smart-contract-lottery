@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.25;
+pragma solidity ^0.8.19;
 
 import {Script, console} from "forge-std/Script.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
@@ -13,12 +13,12 @@ contract DeployRaffle is Script{
     function run() external returns (Raffle, HelperConfig){
         HelperConfig helperConfig = new HelperConfig();
         (        
-            uint256 entranceFee,
-            uint256 interval,
-            address vrfCoordinator,
-            bytes32 gasLane,
             uint64 subscriptionId,
+            bytes32 gasLane,
+            uint256 interval,
+            uint256 entranceFee,
             uint32 callbackGasLimit,
+            address vrfCoordinator,
             address link
         ) = helperConfig.activeNetworkConfig();
 
